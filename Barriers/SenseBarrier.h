@@ -9,9 +9,9 @@
 #include "atomic_ops.h"
 
 
-void shared_init(shared_obj_t *s,int NUM_THREAD,int Round);
-void barrier_cross(barrier_t *b,thread_data_t* tdata);
 void barrier_init(barrier_t *b, int NUM_THREAD);
+void barrier_cross(barrier_t *b,thread_data_t* tdata);
+
 
 
 
@@ -28,7 +28,7 @@ bool_t sense;
 }barrier_t;
 
 
-
+/*
 //shared obj
 typedef struct shared_obj{
 int counter;
@@ -49,7 +49,7 @@ shared_obj_t *sc;
 bool_t threadSense;
 int NUM_THREAD;
 }thread_data_t;
-
+*/
 
 //barrier initialization
 void barrier_init(barrier_t *b, int NUM_THREAD){
