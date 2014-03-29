@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
-
+#include "atomic_ops.h"
 
 #define NUM_THREAD 20
 
@@ -18,7 +18,7 @@ true
 
 //sense barrier implementation
 typedef struct barrier{
-pthread_mutex_t count_mut;
+//pthread_mutex_t count_mut;
 int count;
 bool_t sense;
 bool_t threadSense[NUM_THREAD];
@@ -44,7 +44,7 @@ shared_obj_t *sc;
 void barrier_init(barrier_t *b, int n){
 b->count = n;
 b->sense = false;
-pthread_mutex_init(&b->count_mut,NULL);
+//pthread_mutex_init(&b->count_mut,NULL);
 }
 
 void shared_init(shared_obj_t *s,int n){
@@ -54,9 +54,21 @@ void shared_init(shared_obj_t *s,int n){
 //set barrier_cross condition
 void barrier_cross(barrier_t *b,int n){
 	b->threadSense[n] = !b->sense;
-	pthread_mutex_lock(&b->count_mut);
-		int position  = b->count--;
-	pthread_mutex_unlock(&b->count_mut);
+	//pthread_mutex_lock(&b->count_mut);
+	int temp,position;
+	while(1){
+		temp = b->count;
+		if(temp == CAS_U64(&(b->count),temp,temp-1)){
+			position = temp;
+			break;
+		}
+		else{
+			continue;
+		}
+	
+	} 
+	//position = b->count--;
+	//pthread_mutex_unlock(&b->count_mut);	
 	if(position == 1){
 		b->count = NUM_THREAD;
 		b->sense = b->threadSense[n];
@@ -75,14 +87,14 @@ int task_id = my_data->thread_id;
 int round;
 //printf("thread %02d is going to sleep\n",task_id);
 
-for(round = 0; round < 3 ;round++){
-//printf("thread %02d gets %02d\n",task_id, i);
+for(round = 0; round < 100 ;round++){
+	//printf("thread %02d gets %02d\n",task_id, i);
 	if(round%NUM_THREAD == task_id){
 		(my_data->sc->counter)++;
 		//printf("thread %02d gets %02d in round %d\n",task_id, sc,round);
 	}
 	//sc = my_data->sc;
-	printf("thread %02d gets %02d in round %d\n",task_id, (my_data->sc->counter),round);
+	//printf("thread %02d gets %02d in round %d\n",task_id, (my_data->sc->counter),round);
 	barrier_cross(my_data->barrier,task_id);
 	
 	if((my_data->sc->counter) != round){
