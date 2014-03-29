@@ -18,6 +18,9 @@ extern int opterr;
 extern int optreset;
 
 
+int num_thread;
+int ROUND;
+
 
 //bool type
 typedef enum bool {
@@ -40,11 +43,8 @@ double max(double new, double old){
 	return old;
 }
 
-static volatile bool_t stop;
-int num_thread;
-int ROUND;
 
-/*
+
 //default barrier for test
 typedef struct barrier_def {
     pthread_cond_t complete;
@@ -77,7 +77,7 @@ void barrier_cross_def(barrier_def_t *b)
     pthread_mutex_unlock(&b->mutex);
 }
 
-*/
+
 
 
 //sense barrier implementation
@@ -95,12 +95,11 @@ int round;
 //information sent to threads
 typedef struct thread_data{
 	barrier_t *barrier;
-        //barrier_def_t *barrier_def;
+        barrier_def_t *barrier_def;
 	struct timeval *start, *end;
 	int thread_id;
 	shared_obj_t *sc;
 	bool_t threadSense;
-	//int NUM_THREAD;
         int num_cross;
 }thread_data_t;
 
@@ -149,11 +148,15 @@ thread_data_t * my_data = (thread_data_t *) data;
 int task_id = my_data->thread_id;
 
 
-int round;
 
+int round;
+barrier_cross_def(my_data->barrier_def);
 
 for(round = 0; round < ROUND ;round++){
-
+	/*if(round%num_thread == task_id){
+		(my_data->sc->counter)++;
+	}  */
+	
 	gettimeofday(&(my_data->start[round]), NULL);
         //printf("start %ld\n",(my_data->start[round]).tv_usec);
 	barrier_cross(my_data->barrier,my_data);
@@ -161,8 +164,14 @@ for(round = 0; round < ROUND ;round++){
 	gettimeofday(&(my_data->end[round]), NULL);
 	//printf("end %ld\n",(my_data->end[round]).tv_usec);
         
+	
+	/*if((my_data->sc->counter) != round){
+	printf("Error\n");
+	}
+	barrier_cross(my_data->barrier,my_data); */
+	
 }
-//printf("thread %0d over\n",task_id);
+printf("thread %0d over\n",task_id);
 pthread_exit(NULL);
 }
 
@@ -195,6 +204,15 @@ thread_data_t *data;
 int i;
 
 
+//shared_obj_t sc;
+//shared_init(&sc,-1);
+
+
+//global default barrier
+barrier_def_t barrier_def;
+barrier_init_def(&barrier_def,num_thread);
+
+
 //global test barrier
 barrier_t barrier;
 barrier_init(&barrier,num_thread);
@@ -213,21 +231,27 @@ barrier_init(&barrier,num_thread);
 pthread_attr_init(&attr);
 pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
 
-//set the data for each thread and create the threads
+    //set the data for each thread and create the threads
 for ( i = 0; i < num_thread; i++) {
-   	
         data[i].thread_id = i;
+	data[i].barrier_def = &barrier_def;
         data[i].barrier = &barrier;
         data[i].start = start[i];
 	data[i].end = end[i];
+	//data[i].sc = &sc;
         if (pthread_create(&threads[i], &attr, test_thread, (void *)(&data[i])) != 0) {
             fprintf(stderr, "Error creating thread\n");
             exit(1);
         }
     }
+
 pthread_attr_destroy(&attr);
+
+
 long int cross_start;
 long int cross_end;
+
+
 /* Wait for thread completion */
 for ( i = 0; i < num_thread; i++) {
         if (pthread_join(threads[i], NULL) != 0) {
@@ -247,7 +271,7 @@ for ( i = 0; i < num_thread; i++) {
     }
 double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
 
-printf("The Thoughput of Sense Barrier is:%f threads/ms\n", throughput); 
+printf("The Thoughput of Sense Barrier is:%f \n", throughput); 
 free(threads);
 free(data);
 return 0;
