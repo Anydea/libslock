@@ -1,19 +1,12 @@
-#include <stdlib.h>
 #include <pthread.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <string.h>
-#include <unistd.h>
-#include <time.h>
-#include <getopt.h>
-#include "atomic_ops.h"
+#include "barrier_def.h"
+
+#ifndef _SenseBarrier_H_
+#define _SenseBarrier_H_
 
 
-void barrier_init(barrier_t *b, int NUM_THREAD);
-void barrier_cross(barrier_t *b,thread_data_t* tdata);
-
-
-
+extern int num_thread;
+extern int ROUND;
 
 //bool type
 typedef enum bool {
@@ -28,28 +21,18 @@ bool_t sense;
 }barrier_t;
 
 
-/*
-//shared obj
-typedef struct shared_obj{
-int counter;
-int round;
-}shared_obj_t;
-
-
-void shared_init(shared_obj_t *s,int NUM_THREAD,int Round){
-	s->counter = NUM_THREAD;
-	s->round = Round;
-}
-
-//information sent to threads
+#ifndef _Thread_data_
+#define _Thread_data_
 typedef struct thread_data{
-barrier_t *barrier;
-int thread_id;
-shared_obj_t *sc;
-bool_t threadSense;
-int NUM_THREAD;
+	barrier_t *barrier;
+        barrier_def_t *barrier_def;
+	struct timeval *start, *end;
+	int thread_id;
+	//shared_obj_t *sc;
+	bool_t threadSense;
+        int num_cross;
 }thread_data_t;
-*/
+#endif
 
 //barrier initialization
 void barrier_init(barrier_t *b, int NUM_THREAD){
@@ -74,11 +57,13 @@ void barrier_cross(barrier_t *b,thread_data_t* tdata){
 	
 	} 
 	if(position == 1){
-		b->count = tdata->NUM_THREAD;
+		b->count = num_thread;
 		b->sense = tdata->threadSense;
 	}else{
 		while(b->sense!=tdata->threadSense){}
 	}
 	tdata->threadSense = !tdata->threadSense;
 }
+
+#endif
 
