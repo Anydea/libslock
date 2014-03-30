@@ -8,9 +8,12 @@
 #include <time.h>
 #include <getopt.h>
 #include "atomic_ops.h"
+#include "barrier_def.h"
 
 
+#define USE_SenseBarrier
 
+#include "barrier_if.h"
 extern char* optarg;
 extern int optind;
 extern int optopt;
@@ -20,13 +23,6 @@ extern int optreset;
 
 int num_thread;
 int ROUND;
-
-
-//bool type
-typedef enum bool {
-false,
-true
-}bool_t;
 
 
 double min(double new, double old){
@@ -44,54 +40,14 @@ double max(double new, double old){
 }
 
 
-
-//default barrier for test
-typedef struct barrier_def {
-    pthread_cond_t complete;
-    pthread_mutex_t mutex;
-    int count;
-    int crossing;
-} barrier_def_t;
-
-void barrier_init_def(barrier_def_t *b, int n)
-{
-    pthread_cond_init(&b->complete, NULL);
-    pthread_mutex_init(&b->mutex, NULL);
-    b->count = n;
-    b->crossing = 0;
-}
-
-void barrier_cross_def(barrier_def_t *b)
-{
-    pthread_mutex_lock(&b->mutex);
-    
-    b->crossing++;
-    
-    if (b->crossing < b->count) {
-        pthread_cond_wait(&b->complete, &b->mutex);
-    } else {
-        pthread_cond_broadcast(&b->complete);
-        
-        b->crossing = 0;
-    }
-    pthread_mutex_unlock(&b->mutex);
-}
-
-
-
-
-//sense barrier implementation
-typedef struct barrier{
-int count;
-bool_t sense;
-}barrier_t;
-
-
 typedef struct shared_obj{
 int counter;
 int round;
 }shared_obj_t;
 
+
+#ifndef _Thread_data_
+#define _Thread_data_
 //information sent to threads
 typedef struct thread_data{
 	barrier_t *barrier;
@@ -102,43 +58,13 @@ typedef struct thread_data{
 	bool_t threadSense;
         int num_cross;
 }thread_data_t;
+#endif
 
 
-
-
-//barrier initialization
-void barrier_init(barrier_t *b, int n){
-b->count = n;
-b->sense = false;
-}
 
 void shared_init(shared_obj_t *s,int n){
 	s->counter = n;
 	s->round = ROUND;
-}
-
-//set barrier_cross condition
-void barrier_cross(barrier_t *b,thread_data_t* tdata){
-	tdata->threadSense = !b->sense;
-	int temp,position;
-	while(1){
-		temp = b->count;
-		if(temp == CAS_U64(&(b->count),temp,temp-1)){
-			position = temp;
-			break;
-		}
-		else{
-			continue;
-		}
-	
-	} 
-	if(position == 1){
-		b->count = num_thread;
-		b->sense = tdata->threadSense;
-	}else{
-		while(b->sense!=tdata->threadSense){}
-	}
-	tdata->threadSense = !tdata->threadSense;
 }
 
 //threads test
@@ -271,7 +197,7 @@ for ( i = 0; i < num_thread; i++) {
     }
 double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
 
-printf("The Thoughput of Sense Barrier is:%f \n", throughput); 
+printf("The Thoughput of Sense Barrier is:%f threads/ms \n", throughput); 
 free(threads);
 free(data);
 return 0;
