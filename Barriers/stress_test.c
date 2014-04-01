@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <getopt.h>
-#include "atomic_ops.h"
 #include "barrier_def.h"
 
 
