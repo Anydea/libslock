@@ -8,8 +8,8 @@
 #include <time.h>
 
 
-int num_thread = 5;
-int ROUND = 20;
+int num_thread = 17;
+int ROUND = 1;
 
 #define _Barrier_TEST_
 

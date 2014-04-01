@@ -20,6 +20,7 @@ typedef struct Node{
 }Node_t;
 
 Node_t ** Leaf_list;
+//int * shared_counter;
 int leaves = 0;
 
 
@@ -59,7 +60,7 @@ typedef struct thread_data{
 #endif
 
 void node_init(Node_t *node){
-	printf("Node Init.\n");
+	//printf("Node Init.\n");
 	node->count = radix;
 	node->sense = false;
 	node->parent = NULL;
@@ -75,6 +76,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 	int temp,position;
 	while(1){
 		temp = node->count;
+		//printf("temp: %d\n",temp);
 		if(temp == CAS_U64(&(node->count),temp,temp-1)){
 			position = temp;
 			break;
@@ -83,10 +85,10 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 			continue;
 		}
 	}
-	printf("Id: %d  position: %d .\n",tdata->thread_id, position);
+	//printf("Id: %d  position: %d .\n",tdata->thread_id, position);
 	if(position == 1){
 		if(node->parent != NULL){
-			printf("I'm not parent\n");
+			//printf("I'm not parent\n");
 			node_cross(node->parent, tdata);
 		}
 		node->count = radix;
@@ -108,7 +110,7 @@ void build(Node_t* parent, int depth){
 		int i;
 		for(i = 0; i< radix; i++){
 			Node_t * child = (Node_t *)malloc(sizeof(Node_t));
-			node_init(child);
+			node_init(child);//,&shared_counter[depth]);
 			node_parent(child,parent);
 			build(child,depth-1);
 		}
@@ -117,26 +119,28 @@ void build(Node_t* parent, int depth){
 
 
 void TreeBarrier_init(TreeBarrier_t* barrier,int n){
-	printf("TreeBarrier Init.\n");
-	Leaf_list = (Node_t **)malloc(((n+radix-1)/radix)*sizeof(Node_t));	
+	//printf("TreeBarrier Init.\n");
+	Leaf_list = (Node_t **)malloc(((n+radix-1)/radix)*sizeof(Node_t));
+		
 	barrier->depth = 0;
 	while(n>1){
 		barrier->depth++;
 		n = n/radix;
 	}
-	printf("Depth: %d\n", barrier->depth);
+	//printf("Depth: %d\n", barrier->depth);
+	//shared_counter = (int*)malloc(depth*sizeof(int));
 	barrier->radix = radix;
 	barrier->leaves_num = leaves;
 	//barrier->Leaf_list = Leaf_list;
 	barrier->root = (Node_t *)malloc(sizeof(Node_t));
-	node_init(barrier->root);
-	build(barrier->root,barrier->depth);
+	node_init(barrier->root);//,&shared_counter[depth]);
+	build(barrier->root,barrier->depth-1);
 }
 
 
 void TreeBarrier_cross(TreeBarrier_t* b,thread_data_t* tdata){
 	int id = tdata->thread_id;
-	printf("id/radix: %d\n",id/radix);
+	//printf("id/radix: %d\n",id/radix);
 	Node_t * my_leaf = Leaf_list[id/radix];
 	node_cross(my_leaf,tdata);
 }

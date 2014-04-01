@@ -15,7 +15,7 @@ void shared_init(shared_obj_t *s,int n){
 #ifdef USE_SenseBarrier
 #include "SenseBarrier.h"
 #elif defined(USE_TreeBarrier)
-int radix = 5;
+int radix = 4;
 #include "TreeBarrier.h"
 #endif
 
