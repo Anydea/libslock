@@ -6,9 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <math.h>
 
 
-int num_thread = 17;
+int num_thread = 200;
 int ROUND = 1;
 
 #define _Barrier_TEST_
@@ -16,6 +17,8 @@ int ROUND = 1;
 //#define USE_SenseBarrier
 
 #define USE_TreeBarrier
+
+//#define USE_StaticTreeBarrier
 
 #include "barrier_if.h"
 
@@ -45,6 +48,8 @@ for(round = 0; round < ROUND ;round++){
 	barrier_cross(my_data->barrier,my_data);
         #elif defined(USE_TreeBarrier)
 	TreeBarrier_cross(my_data->barrier,my_data);
+	#elif defined(USE_StaticTreeBarrier)
+	StaticTreeBarrier_cross(my_data->barrier,my_data);
 	#endif
 	
 	
@@ -55,6 +60,8 @@ for(round = 0; round < ROUND ;round++){
 	barrier_cross(my_data->barrier,my_data);
         #elif defined(USE_TreeBarrier)
 	TreeBarrier_cross(my_data->barrier,my_data);
+	#elif defined(USE_StaticTreeBarrier)
+	StaticTreeBarrier_cross(my_data->barrier,my_data);
 	#endif
 	
 }
@@ -78,8 +85,14 @@ shared_init(&sc,-1);
 barrier_t barrier;
 barrier_init(&barrier,num_thread);
 #elif defined(USE_TreeBarrier)
+radix = (int)(sqrt_my((int)num_thread))+1;
+num_backup = num_thread;
 TreeBarrier_t barrier;
 TreeBarrier_init(&barrier,num_thread);
+#elif defined(USE_StaticTreeBarrier)
+radix = (int)(2*sqrt_my((int)num_thread));
+StaticTreeBarrier_t barrier;
+StaticTreeBarrier_init(&barrier,num_thread);
 #endif
 
 //initialize the data which will be passed to the threads
@@ -118,6 +131,12 @@ for ( i = 0; i < num_thread; i++) {
     }
 free(threads);
 free(data);
+#ifdef USE_SenseBarrier
+#elif defined(USE_TreeBarrier)
+TreeBarrier_destroy();
+#elif defined(USE_StaticTreeBarrier)
+StaticTreeBarrier_destroy();
+#endif
 return 0;
 }
 
