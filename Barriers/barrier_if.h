@@ -1,4 +1,3 @@
-extern int ROUND;
 #ifdef _Barrier_TEST_
 #define _Shared_data_
 typedef struct shared_obj{
@@ -10,13 +9,31 @@ void shared_init(shared_obj_t *s,int n){
 	s->counter = n;
 	s->round = ROUND;
 }
+
+int sqrt_my(int num){
+	int i = 0;
+	while(1){
+		if(i*i == num)
+			return i;
+		if(i*i < num)
+			i++;
+		else
+			return --i;
+	}
+}
 #endif
 
 #ifdef USE_SenseBarrier
 #include "SenseBarrier.h"
 #elif defined(USE_TreeBarrier)
-int radix = 4;
+
+int num_backup;
+int radix;
 #include "TreeBarrier.h"
+#elif defined(USE_StaticTreeBarrier)
+int radix;
+#include "StaticTreeBarrier.h"
+
 #endif
 
 
