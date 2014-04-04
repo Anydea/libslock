@@ -90,7 +90,7 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 		}
 		while(global_sense != mySense){}
 	}else{
-		printf("I'm  %d , PARENT\n",tdata->thread_id);
+		//printf("I'm  %d , PARENT\n",tdata->thread_id);
 		global_sense = !global_sense;
 	}
 	tdata->threadSense = !mySense;
@@ -115,10 +115,11 @@ void build(Node_t* parent, int depth){
 	}
 }
 
-void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier,int n){
+void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	Node_list = (Node_t **)malloc(num_thread*sizeof(Node_t));
 	nodes = 0;
 	barrier->depth = 0;
+	int n = num_thread;
 	while(n>1){
 		barrier->depth++;
 		n = n/radix;

@@ -1,12 +1,8 @@
 #ifndef _SenseBarrier_H_
 #define _SenseBarrier_H_
 #include "atomic_ops.h"
-#include <pthread.h>
 #include "barrier_def.h"
 
-
-extern int num_thread;
-extern int ROUND;
 
 //bool type
 typedef enum bool {
@@ -46,8 +42,8 @@ typedef struct thread_data{
 
 
 //barrier initialization
-void barrier_init(barrier_t *b, int NUM_THREAD){
-b->count = NUM_THREAD;
+void barrier_init(barrier_t *b){
+b->count = num_thread;
 b->sense = false;
 }
 

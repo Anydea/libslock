@@ -138,11 +138,12 @@ void build(Node_t* parent, int depth){
 }
 
 
-void TreeBarrier_init(TreeBarrier_t* barrier,int n){
+void TreeBarrier_init(TreeBarrier_t* barrier){
 	//printf("TreeBarrier Init.\n");
-	Leaf_list = (Node_t **)malloc((n+radix-1)/radix*sizeof(Node_t));
+	Leaf_list = (Node_t **)malloc((num_thread+radix-1)/radix*sizeof(Node_t));
 		
 	barrier->depth = 0;
+	int n = num_thread;
 	n = n+radix-1;
 	while(n>1){
 		barrier->depth++;
