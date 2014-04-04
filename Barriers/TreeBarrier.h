@@ -83,7 +83,6 @@ void node_update(Node_t *node, int is_leaf, int* remain){
 void node_cross(Node_t * node, thread_data_t* tdata){
 	tdata->threadSense = !node->sense;
 	bool_t mysense = tdata->threadSense;
-	//printf("%d Node %d have %d children/branches, my count is %d\n",tdata->thread_id,tdata->thread_id/radix,node->children,node->count);
 	int temp,position;
 	while(1){
 		temp = node->count;
@@ -116,6 +115,7 @@ void build(Node_t* parent, int depth){
 	int *remaining;
 	remaining = &num_backup;
 	if(depth == 0){
+		//printf("remaining nodes %d  %d\n",*remaining,num_backup);
 		Leaf_list[leaves++] = parent;
 		if((*remaining)>radix){
 			(*remaining) = (*remaining)-radix;
@@ -124,11 +124,10 @@ void build(Node_t* parent, int depth){
 			node_update(parent,1,remaining);
 			(*remaining) =0;
 		}
-		//parent = (Node_t *)malloc(sizeof(Node_t));
 	}else{
 		int i;
 		for(i = 0; i< radix &&(*remaining)>0; i++){
-			printf("remaining nodes %d  %d\n",*remaining,num_backup);
+			//printf("remaining nodes %d  %d\n",*remaining,num_backup);
 			Node_t * child = (Node_t *)malloc(sizeof(Node_t));
 			node_init(child);
 			node_parent(child,parent);
@@ -141,7 +140,7 @@ void build(Node_t* parent, int depth){
 
 void TreeBarrier_init(TreeBarrier_t* barrier,int n){
 	//printf("TreeBarrier Init.\n");
-	Leaf_list = (Node_t **)malloc(((n+radix-1)/radix)*sizeof(Node_t));
+	Leaf_list = (Node_t **)malloc((n+radix-1)/radix*sizeof(Node_t));
 		
 	barrier->depth = 0;
 	n = n+radix-1;
@@ -149,13 +148,16 @@ void TreeBarrier_init(TreeBarrier_t* barrier,int n){
 		barrier->depth++;
 		n = n/radix;
 	}
+	if(radix^(barrier->depth)<num_thread){
+		barrier->depth++;
+	}
 	//printf("Depth: %d\n", barrier->depth);
 	//shared_counter = (int*)malloc(depth*sizeof(int));
 	barrier->radix = radix;
 	//barrier->leaves_num = leaves;
 	//barrier->Leaf_list = Leaf_list;
 	barrier->root = (Node_t *)malloc(sizeof(Node_t));
-	node_init(barrier->root);//,&shared_counter[depth]);
+	node_init(barrier->root);
 	build(barrier->root,barrier->depth-1);
 }
 
@@ -167,7 +169,29 @@ void TreeBarrier_cross(TreeBarrier_t* b,thread_data_t* tdata){
 	node_cross(my_leaf,tdata);
 }
 
+
+void destroy_recur(Node_t *node){
+	if(node->parent != NULL){
+		node->parent->count--;
+		if(node->parent->count == 0){
+			destroy_recur(node->parent);
+		}
+		free(node);
+		//printf("free\n");
+	}else{
+		free(node);
+		//printf("free\n");
+	}
+}
 void TreeBarrier_destroy(){
+	int i;
+	for(i = 0; i<(num_thread+radix-1)/radix;i++){
+		//printf("F\n");
+		destroy_recur(Leaf_list[i]);
+	}
+	free(Leaf_list);
+
 
 }
+
 #endif
