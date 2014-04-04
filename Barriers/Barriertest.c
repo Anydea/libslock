@@ -9,16 +9,16 @@
 #include <math.h>
 
 
-int num_thread = 200;
+int num_thread = 14;
 int ROUND = 1;
 
 #define _Barrier_TEST_
 
 //#define USE_SenseBarrier
 
-#define USE_TreeBarrier
+//#define USE_TreeBarrier
 
-//#define USE_StaticTreeBarrier
+#define USE_StaticTreeBarrier
 
 #include "barrier_if.h"
 
@@ -82,17 +82,22 @@ shared_init(&sc,-1);
 
 //global barrier
 #ifdef USE_SenseBarrier
+printf("SenseBarrier\n");
 barrier_t barrier;
-barrier_init(&barrier,num_thread);
+barrier_init(&barrier);
 #elif defined(USE_TreeBarrier)
-radix = (int)(sqrt_my((int)num_thread))+1;
+printf("TreeBarrier\n");
+//radix = (int)(sqrt_my((int)num_thread))+1;
+radix = 10;
 num_backup = num_thread;
 TreeBarrier_t barrier;
-TreeBarrier_init(&barrier,num_thread);
+TreeBarrier_init(&barrier);
 #elif defined(USE_StaticTreeBarrier)
-radix = (int)(2*sqrt_my((int)num_thread));
+printf("StaticTreeBarrier\n");
+radix = 2;
+//radix = (int)(2*sqrt_my((int)num_thread));
 StaticTreeBarrier_t barrier;
-StaticTreeBarrier_init(&barrier,num_thread);
+StaticTreeBarrier_init(&barrier);
 #endif
 
 //initialize the data which will be passed to the threads
