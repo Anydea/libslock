@@ -3,8 +3,6 @@
 #define _TreeBarrier_h_
 
 #include "atomic_ops.h"
-extern int num_thread;
-extern int radix;
 
 
 
@@ -15,6 +13,7 @@ typedef enum bool{
 
 typedef struct Node{
 	int  count;
+	int children;
 	bool_t sense;
 	struct Node * parent;
 }Node_t;
@@ -26,7 +25,7 @@ int leaves = 0;
 
 typedef struct TreeBarrier{
 	int radix;
-	int leaves_num;
+	//int leaves_num;
 	Node_t* root;
 	//Node_t* Leaf_list;
 	int depth;
@@ -62,17 +61,29 @@ typedef struct thread_data{
 void node_init(Node_t *node){
 	//printf("Node Init.\n");
 	node->count = radix;
+	node->children=0;
 	node->sense = false;
 	node->parent = NULL;
 }
 
 void node_parent(Node_t *node, Node_t * parent){
 	node->parent = parent;
+	parent->children++;
+}
+
+void node_update(Node_t *node, int is_leaf, int* remain){
+	if(is_leaf){
+		node->children = (*remain);
+		node->count = node->children;
+	}else{
+		node->count = node->children;
+	}
 }
 
 void node_cross(Node_t * node, thread_data_t* tdata){
 	tdata->threadSense = !node->sense;
 	bool_t mysense = tdata->threadSense;
+	//printf("%d Node %d have %d children/branches, my count is %d\n",tdata->thread_id,tdata->thread_id/radix,node->children,node->count);
 	int temp,position;
 	while(1){
 		temp = node->count;
@@ -91,7 +102,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 			//printf("I'm not parent\n");
 			node_cross(node->parent, tdata);
 		}
-		node->count = radix;
+		node->count = node->children;
 		node->sense = mysense;
 	}else{
 		while(node->sense != mysense) {}
@@ -102,17 +113,27 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 
 
 void build(Node_t* parent, int depth){
-	
+	int *remaining;
+	remaining = &num_backup;
 	if(depth == 0){
 		Leaf_list[leaves++] = parent;
+		if((*remaining)>radix){
+			(*remaining) = (*remaining)-radix;
+			node_update(parent,1,&radix);
+		}else{
+			node_update(parent,1,remaining);
+			(*remaining) =0;
+		}
 		//parent = (Node_t *)malloc(sizeof(Node_t));
 	}else{
 		int i;
-		for(i = 0; i< radix; i++){
+		for(i = 0; i< radix &&(*remaining)>0; i++){
+			printf("remaining nodes %d  %d\n",*remaining,num_backup);
 			Node_t * child = (Node_t *)malloc(sizeof(Node_t));
-			node_init(child);//,&shared_counter[depth]);
+			node_init(child);
 			node_parent(child,parent);
 			build(child,depth-1);
+			node_update(parent,0,remaining);
 		}
 	}
 }
@@ -123,6 +144,7 @@ void TreeBarrier_init(TreeBarrier_t* barrier,int n){
 	Leaf_list = (Node_t **)malloc(((n+radix-1)/radix)*sizeof(Node_t));
 		
 	barrier->depth = 0;
+	n = n+radix-1;
 	while(n>1){
 		barrier->depth++;
 		n = n/radix;
@@ -130,7 +152,7 @@ void TreeBarrier_init(TreeBarrier_t* barrier,int n){
 	//printf("Depth: %d\n", barrier->depth);
 	//shared_counter = (int*)malloc(depth*sizeof(int));
 	barrier->radix = radix;
-	barrier->leaves_num = leaves;
+	//barrier->leaves_num = leaves;
 	//barrier->Leaf_list = Leaf_list;
 	barrier->root = (Node_t *)malloc(sizeof(Node_t));
 	node_init(barrier->root);//,&shared_counter[depth]);
@@ -145,5 +167,7 @@ void TreeBarrier_cross(TreeBarrier_t* b,thread_data_t* tdata){
 	node_cross(my_leaf,tdata);
 }
 
+void TreeBarrier_destroy(){
 
+}
 #endif
