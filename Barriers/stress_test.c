@@ -10,7 +10,19 @@
 #include "barrier_def.h"
 
 
-#define USE_SenseBarrier
+
+
+
+int num_thread;
+int ROUND;
+
+
+//#define USE_SenseBarrier
+
+//#define USE_TreeBarrier
+
+
+#define USE_StaticTreeBarrier
 
 #include "barrier_if.h"
 extern char* optarg;
@@ -20,8 +32,6 @@ extern int opterr;
 extern int optreset;
 
 
-int num_thread;
-int ROUND;
 
 
 double min(double new, double old){
@@ -74,17 +84,25 @@ int task_id = my_data->thread_id;
 
 
 
-int round;
+int round=0;
 barrier_cross_def(my_data->barrier_def);
 
+
+gettimeofday(&(my_data->start[round]), NULL);
 for(round = 0; round < ROUND ;round++){
 	/*if(round%num_thread == task_id){
 		(my_data->sc->counter)++;
 	}  */
 	
-	gettimeofday(&(my_data->start[round]), NULL);
+	//gettimeofday(&(my_data->start[round]), NULL);
         //printf("start %ld\n",(my_data->start[round]).tv_usec);
+	#ifdef USE_SenseBarrier
 	barrier_cross(my_data->barrier,my_data);
+        #elif defined(USE_TreeBarrier)
+	TreeBarrier_cross(my_data->barrier,my_data);
+	#elif defined(USE_StaticTreeBarrier)
+	StaticTreeBarrier_cross(my_data->barrier,my_data);
+	#endif
 
 	gettimeofday(&(my_data->end[round]), NULL);
 	//printf("end %ld\n",(my_data->end[round]).tv_usec);
@@ -96,7 +114,8 @@ for(round = 0; round < ROUND ;round++){
 	barrier_cross(my_data->barrier,my_data); */
 	
 }
-printf("thread %0d over\n",task_id);
+gettimeofday(&(my_data->end[round-1]), NULL);
+//printf("thread %0d over\n",task_id);
 pthread_exit(NULL);
 }
 
@@ -105,8 +124,12 @@ int main(int argc, char*argv[])
 int ch;
 opterr = 0;
 
+//default setting
+num_thread 	= 	10;
+ROUND		=	10;
+radix		=	2;
 
-while((ch = getopt(argc,argv,"n:r:"))!=-1){
+while((ch = getopt(argc,argv,"n:r:f::h"))!=-1){
 	switch(ch){
 		case 'n': 
 			num_thread = atoi(optarg);
@@ -114,14 +137,36 @@ while((ch = getopt(argc,argv,"n:r:"))!=-1){
 		case 'r':
 			ROUND = atoi(optarg);
 			break;
-		default :
-			printf("-n NUM_THREAD\n-r NUM_ROUND\n");
-			return 1;
-			
+		case 'f':
+			radix = atoi(optarg);
+			break;
+		case 'h' :
+			printf("-n NUM_THREAD\n-r NUM_ROUND\n-f Tree Radix\n");
+			return -1;
+		default  :
+			printf("-n NUM_THREAD\n-r NUM_ROUND\n-f Tree Radix\n");
+			return -1;
 	}
 }
 
+
+#ifdef USE_SenseBarrier
+//printf("SenseBarrier\n");
+//printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\n",num_thread,ROUND);
+printf("%d %d ",num_thread,ROUND);
+#elif defined(USE_TreeBarrier)
+//printf("TreeBarrier\n");
+//printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\nTree Radix: %d\n",num_thread,ROUND,radix);
+printf("%d %d %d ",num_thread,ROUND,radix);
+#elif defined(USE_StaticTreeBarrier)
+//printf("StaticTreeBarrier\n");
+//printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\nTree Radix: %d\n",num_thread,ROUND,radix);
+printf("%d %d %d ",num_thread,ROUND,radix);
+#endif
+
 struct timeval start[num_thread][ROUND], end[num_thread][ROUND];
+
+
 
 pthread_t *threads;
 pthread_attr_t attr;
@@ -139,8 +184,24 @@ barrier_init_def(&barrier_def,num_thread);
 
 
 //global test barrier
+#ifdef USE_SenseBarrier
+
+char bname[] = "SenseBarrier";
 barrier_t barrier;
-barrier_init(&barrier,num_thread);
+barrier_init(&barrier);
+#elif defined(USE_TreeBarrier)
+
+char bname[] = "TreeBarrier";
+//radix = (int)(sqrt_my((int)num_thread))+1;
+num_backup = num_thread;
+TreeBarrier_t barrier;
+TreeBarrier_init(&barrier);
+#elif defined(USE_StaticTreeBarrier)
+char bname[] = "StaticTreeBarrier";
+//radix = (int)(2*sqrt_my((int)num_thread));
+StaticTreeBarrier_t barrier;
+StaticTreeBarrier_init(&barrier);
+#endif
 
 //initialize the data which will be passed to the threads
     if ((data = (thread_data_t *)malloc(num_thread * sizeof(thread_data_t))) == NULL) {
@@ -196,9 +257,16 @@ for ( i = 0; i < num_thread; i++) {
     }
 double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
 
-printf("The Thoughput of Sense Barrier is:%f threads/ms \n", throughput); 
+//printf("The Thoughput of %s is:%f threads/ms \n",bname, throughput); 
+printf("%f\n",throughput); 
 free(threads);
 free(data);
+#ifdef USE_SenseBarrier
+#elif defined(USE_TreeBarrier)
+TreeBarrier_destroy();
+#elif defined(USE_StaticTreeBarrier)
+StaticTreeBarrier_destroy();
+#endif
 return 0;
 }
 

@@ -23,15 +23,16 @@ int sqrt_my(int num){
 }
 #endif
 
+int radix;
+
 #ifdef USE_SenseBarrier
 #include "SenseBarrier.h"
 #elif defined(USE_TreeBarrier)
 
 int num_backup;
-int radix;
+
 #include "TreeBarrier.h"
 #elif defined(USE_StaticTreeBarrier)
-int radix;
 #include "StaticTreeBarrier.h"
 
 #endif
