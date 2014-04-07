@@ -17,12 +17,12 @@ int num_thread;
 int ROUND;
 
 
-//#define USE_SenseBarrier
+#define USE_SenseBarrier
 
 //#define USE_TreeBarrier
 
 
-#define USE_StaticTreeBarrier
+//#define USE_StaticTreeBarrier
 
 #include "barrier_if.h"
 extern char* optarg;

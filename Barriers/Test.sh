@@ -5,7 +5,7 @@ for n in {20..200..20}
 		echo $n
 		for r in {10..100..10}
 			do	
-				./stress_test.o -r $r -n $n >> StaticTreeB.txt
+				./stress_test.o -r $r -n $n >> SenseB.txt
 			done
 	done
 
