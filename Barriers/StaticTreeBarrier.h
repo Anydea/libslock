@@ -124,6 +124,13 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 		barrier->depth++;
 		n = n/radix;
 	}
+	int total =0;
+	for(n=0;n<=barrier->depth;n++){
+		total=total+radix^n;
+	}
+	if(total<num_thread){
+		barrier->depth++;
+	}
 	//printf("Depth: %d\n", barrier->depth);
 	barrier->radix = radix;
 	//barrier->root = NULL;
