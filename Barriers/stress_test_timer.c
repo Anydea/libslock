@@ -21,7 +21,11 @@ void trigger(int sig){
 int num_thread;
 int ROUND;
 float period;
+<<<<<<< HEAD
 int total_cross;
+=======
+int total_cross=0;
+>>>>>>> 19576a82915707ed8d11372bb8587bcca2252921
 
 #define USE_SenseBarrier
 
@@ -284,7 +288,11 @@ for ( i = 0; i < num_thread; i++) {
 
 
 //printf("The Thoughput of %s is:%f threads/ms \n",bname, throughput); 
+<<<<<<< HEAD
 printf("%f\n",throughput/period); 
+=======
+printf("%f\n",total_cross/(period*num_thread)); 
+>>>>>>> 19576a82915707ed8d11372bb8587bcca2252921
 free(threads);
 free(data);
 #ifdef USE_SenseBarrier

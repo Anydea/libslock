@@ -84,7 +84,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 	tdata->threadSense = !node->sense;
 	bool_t mysense = tdata->threadSense;
 	int temp,position;
-	while(1){
+	while(!stop){
 		temp = node->count;
 		//printf("temp: %d\n",temp);
 		if(temp == CAS_U64(&(node->count),temp,temp-1)){
@@ -104,7 +104,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 		node->count = node->children;
 		node->sense = mysense;
 	}else{
-		while(node->sense != mysense) {}
+		while(node->sense != mysense && !stop) {}
 	}
 	tdata->threadSense = !mysense;
 }
