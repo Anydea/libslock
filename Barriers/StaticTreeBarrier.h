@@ -71,7 +71,7 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 	tdata->threadSense = !global_sense;
 	bool_t mySense = tdata->threadSense;
 	//printf("I'm  %d , having %d child(dren)\n",tdata->thread_id,node->children);
-	while(node->ChildCount >0){
+	while(node->ChildCount >0 && !stop){
 	/*	if(tdata->thread_id == 1){		
 		printf("I'm waiting %d\n",tdata->thread_id);
 		} */
