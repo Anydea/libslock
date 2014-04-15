@@ -79,7 +79,7 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 	node->ChildCount = node->children;
 	if(node->parent != NULL){
 		int temp;
-		while(1){
+		while(!stop){
 			temp=node->parent->ChildCount;
 			if(temp == CAS_U64(&node->parent->ChildCount,temp,temp-1)){
 				//printf("I'm  %d , changing parent %d child(dren)\n",tdata->thread_id,node->parent->ChildCount);
@@ -88,7 +88,7 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 				continue;
 			}
 		}
-		while(global_sense != mySense){}
+		while(global_sense != mySense && !stop){}
 	}else{
 		//printf("I'm  %d , PARENT\n",tdata->thread_id);
 		global_sense = !global_sense;
