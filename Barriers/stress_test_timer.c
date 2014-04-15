@@ -148,7 +148,7 @@ opterr = 0;
 //default setting
 num_thread 	= 	10;
 ROUND		=	10;
-radix		=	2;
+radix		=	10;
 period		=	1;
 while((ch = getopt(argc,argv,"n:r::f::ht::"))!=-1){
 	switch(ch){
@@ -284,7 +284,7 @@ for ( i = 0; i < num_thread; i++) {
 
 
 //printf("The Thoughput of %s is:%f threads/ms \n",bname, throughput); 
-printf("%f\n",total_cross/(period*num_thread)); 
+printf("%f\n",(float)total_cross/period); 
 free(threads);
 free(data);
 #ifdef USE_SenseBarrier
