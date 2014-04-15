@@ -20,7 +20,8 @@ void trigger(int sig){
 
 int num_thread;
 int ROUND;
-int period;
+float period;
+int total_cross;
 
 #define USE_SenseBarrier
 
@@ -111,8 +112,9 @@ while(!stop){
 		#elif defined(USE_StaticTreeBarrier)
 		StaticTreeBarrier_cross(my_data->barrier,my_data);
 		#endif
-
-		gettimeofday(&(my_data->end[round]), NULL);
+		
+		my_data->num_cross++;
+		//gettimeofday(&(my_data->end[round]), NULL);
 		//printf("end %ld\n",(my_data->end[round]).tv_usec);
         
 	
@@ -122,6 +124,16 @@ while(!stop){
 		barrier_cross(my_data->barrier,my_data); */
 	
 	//}
+}
+
+int temp = 0;
+while(1){
+	temp = total_cross;
+	if(temp == CAS_U64(&total_cross,temp,temp+my_data->num_cross)){
+		break;
+	}else{
+		continue;
+	}
 }
 //gettimeofday(&(my_data->end[round-1]), NULL);
 //printf("thread %0d over\n",task_id);
@@ -236,7 +248,7 @@ for ( i = 0; i < num_thread; i++) {
         data[i].barrier = &barrier;
         data[i].start = start[i];
 	data[i].end = end[i];
-	//data[i].sc = &sc;
+	data[i].num_cross =0;
         if (pthread_create(&threads[i], &attr, test_thread, (void *)(&data[i])) != 0) {
             fprintf(stderr, "Error creating thread\n");
             exit(1);
@@ -256,7 +268,7 @@ for ( i = 0; i < num_thread; i++) {
             fprintf(stderr, "Error waiting for thread completion\n");
             exit(1);
         }
-	if(i == 0){
+/*	if(i == 0){
 		cross_start = start[i][0].tv_sec*1000000+start[i][0].tv_usec;
 		cross_end  = end[i][ROUND-1].tv_sec*1000000+end[i][ROUND-1].tv_usec;
 	}else{
@@ -266,11 +278,13 @@ for ( i = 0; i < num_thread; i++) {
         //printf("%ld %ld\n",start[i][ROUND-1].tv_sec,start[i][ROUND-1].tv_usec);
 	}
         //printf("%ld %ld\n",cross_start,cross_end);
-    }
-double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
+*/    }
+//double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
+
+
 
 //printf("The Thoughput of %s is:%f threads/ms \n",bname, throughput); 
-printf("%f\n",throughput); 
+printf("%f\n",throughput/period); 
 free(threads);
 free(data);
 #ifdef USE_SenseBarrier
