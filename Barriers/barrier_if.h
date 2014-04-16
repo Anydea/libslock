@@ -38,4 +38,41 @@ int num_backup;
 #endif
 
 
+#ifdef USE_SenseBarrier
+typedef barrier_t BARRIER_t;
+#elif defined(USE_TreeBarrier)
+typedef TreeBarrier_t  BARRIER_t;
+#elif defined(USE_StaticTreeBarrier)
+typedef StaticTreeBarrier_t BARRIER_t;
+#endif
+
+
+static inline void InitBarrier(BARRIER_t barrier){
+#ifdef USE_SenseBarrier
+    barrier_init(&barrier);
+#elif defined(USE_TreeBarrier)
+    TreeBarrier_init(&barrier);
+#elif defined(USE_StaticTreeBarrier)
+     StaticTreeBarrier_init(&barrier);
+#endif
+}
+
+static inline void CrossBarrier(thread_data_t* my_data){
+#ifdef USE_SenseBarrier
+	barrier_cross(my_data->barrier,my_data);
+#elif defined(USE_TreeBarrier)
+	TreeBarrier_cross(my_data->barrier,my_data);
+#elif defined(USE_StaticTreeBarrier)
+	StaticTreeBarrier_cross(my_data->barrier,my_data);
+#endif
+}
+
+static inline void freeBarrier(){
+    #ifdef USE_SenseBarrier
+    #elif defined(USE_TreeBarrier)
+        TreeBarrier_destroy();
+    #elif defined(USE_StaticTreeBarrier)
+        StaticTreeBarrier_destroy();
+    #endif
+}
 
