@@ -23,6 +23,8 @@ int ROUND;
 int period;
 int total_cross=0;
 
+
+
 //#define USE_SenseBarrier
 
 #define USE_TreeBarrier
@@ -30,6 +32,7 @@ int total_cross=0;
 
 //#define USE_StaticTreeBarrier
 
+#define MORE_THREADS
 #include "barrier_if.h"
 extern char* optarg;
 extern int optind;

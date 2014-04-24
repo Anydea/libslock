@@ -104,7 +104,11 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 		node->count = node->children;
 		node->sense = mysense;
 	}else{
-		while(node->sense != mysense && !stop) {}
+		while(node->sense != mysense && !stop) {
+			#ifdef MORE_THREADS
+				pthread_yield();
+			#endif
+		}
 	}
 	tdata->threadSense = !mysense;
 }

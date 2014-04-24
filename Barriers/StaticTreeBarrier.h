@@ -88,7 +88,11 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 				continue;
 			}
 		}
-		while(global_sense != mySense && !stop){}
+		while(global_sense != mySense && !stop){
+			#ifdef MORE_THREADS
+				pthread_yield();
+			#endif
+		}
 	}else{
 		//printf("I'm  %d , PARENT\n",tdata->thread_id);
 		global_sense = !global_sense;

@@ -68,7 +68,11 @@ void barrier_cross(barrier_t *b,thread_data_t* tdata){
 		b->count = num_thread;
 		b->sense = tdata->threadSense;
 	}else{
-		while(b->sense!=tdata->threadSense && !stop ){}
+		while(b->sense!=tdata->threadSense && !stop ){
+			#ifdef MORE_THREADS
+				pthread_yield();
+			#endif
+		}
 	}
 	tdata->threadSense = !tdata->threadSense;
 	//printf("Crossing End %d\n",tdata->num_cross);
