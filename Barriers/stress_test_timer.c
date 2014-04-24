@@ -10,6 +10,14 @@
 #include <signal.h>
 #include "barrier_def.h"
 
+/*
+-DUSE_SenseBarrier	or
+-DUSE_TreeBarrier	or
+-DUSE_StaticTreeBarrier
+
+If the number of threads is larger than the number of core
+-DMORE_THREADS
+*/
 
 
 volatile int stop = 0;
@@ -27,12 +35,13 @@ int total_cross=0;
 
 //#define USE_SenseBarrier
 
-#define USE_TreeBarrier
+//#define USE_TreeBarrier
 
 
 //#define USE_StaticTreeBarrier
 
-#define MORE_THREADS
+//#define MORE_THREADS
+
 #include "barrier_if.h"
 extern char* optarg;
 extern int optind;
@@ -63,7 +72,7 @@ int counter;
 int round;
 }shared_obj_t;
 
-
+/*
 #ifndef _Thread_data_
 #define _Thread_data_
 //information sent to threads
@@ -77,67 +86,18 @@ typedef struct thread_data{
         int num_cross;
 }thread_data_t;
 #endif
+*/
 
-
+void *test_thread(void*);
 
 void shared_init(shared_obj_t *s,int n){
 	s->counter = n;
 	s->round = ROUND;
 }
-
-//threads test
-void *test_thread(void* data){
-
-thread_data_t * my_data = (thread_data_t *) data;
-int task_id = my_data->thread_id;
-
-signal(SIGALRM,trigger);
-alarm(period);
-
-int round=0;
-barrier_cross_def(my_data->barrier_def);
-
-
-//gettimeofday(&(my_data->start[round]), NULL);
-while(!stop){
-	//for(round = 0; round < ROUND ;round++){
-		/*if(round%num_thread == task_id){
-			(my_data->sc->counter)++;
-		}  */
-	
-		//gettimeofday(&(my_data->start[round]), NULL);
-        	//printf("start %ld\n",(my_data->start[round]).tv_usec);
-	
-		CrossBarrier(my_data);
-		my_data->num_cross++;
-		//gettimeofday(&(my_data->end[round]), NULL);
-		//printf("end %ld\n",(my_data->end[round]).tv_usec);
-        
-	
-		/*if((my_data->sc->counter) != round){
-		printf("Error\n");
-		}
-		barrier_cross(my_data->barrier,my_data); */
-	
-	//}
-}
-
-int temp = 0;
-while(1){
-	temp = total_cross;
-	if(temp == CAS_U64(&total_cross,temp,temp+my_data->num_cross)){
-		break;
-	}else{
-		continue;
-	}
-}
-//gettimeofday(&(my_data->end[round-1]), NULL);
-//printf("thread %0d over\n",task_id);
-pthread_exit(NULL);
-}
-
 int main(int argc, char*argv[])
 {
+
+
 int ch;
 opterr = 0;
 
@@ -278,4 +238,57 @@ freeBarrier();
 return 0;
 
 }
+
+
+//threads test
+void *test_thread(void* data){
+
+thread_data_t * my_data = (thread_data_t *) data;
+int task_id = my_data->thread_id;
+
+signal(SIGALRM,trigger);
+alarm(period);
+
+int round=0;
+barrier_cross_def(my_data->barrier_def);
+
+
+//gettimeofday(&(my_data->start[round]), NULL);
+while(!stop){
+	//for(round = 0; round < ROUND ;round++){
+		/*if(round%num_thread == task_id){
+			(my_data->sc->counter)++;
+		}  */
+	
+		//gettimeofday(&(my_data->start[round]), NULL);
+        	//printf("start %ld\n",(my_data->start[round]).tv_usec);
+	
+		CrossBarrier(my_data);
+		my_data->num_cross++;
+		//gettimeofday(&(my_data->end[round]), NULL);
+		//printf("end %ld\n",(my_data->end[round]).tv_usec);
+        
+	
+		/*if((my_data->sc->counter) != round){
+		printf("Error\n");
+		}
+		barrier_cross(my_data->barrier,my_data); */
+	
+	//}
+}
+
+int temp = 0;
+while(1){
+	temp = total_cross;
+	if(temp == CAS_U64(&total_cross,temp,temp+my_data->num_cross)){
+		break;
+	}else{
+		continue;
+	}
+}
+//gettimeofday(&(my_data->end[round-1]), NULL);
+//printf("thread %0d over\n",task_id);
+pthread_exit(NULL);
+}
+
 
