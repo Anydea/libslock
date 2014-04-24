@@ -15,7 +15,7 @@
 
 int num_thread;
 int ROUND;
-
+int stop =0;
 
 #define USE_SenseBarrier
 
@@ -182,7 +182,7 @@ int i;
 barrier_def_t barrier_def;
 barrier_init_def(&barrier_def,num_thread);
 
-
+/*
 //global test barrier
 #ifdef USE_SenseBarrier
 
@@ -202,6 +202,9 @@ char bname[] = "StaticTreeBarrier";
 StaticTreeBarrier_t barrier;
 StaticTreeBarrier_init(&barrier);
 #endif
+*/
+BARRIER_t barrier;
+InitBarrier(barrier);
 
 //initialize the data which will be passed to the threads
     if ((data = (thread_data_t *)malloc(num_thread * sizeof(thread_data_t))) == NULL) {
@@ -261,12 +264,16 @@ double throughput = (double)ROUND*num_thread/(cross_end-cross_start) * 1000;
 printf("%f\n",throughput); 
 free(threads);
 free(data);
+
+freeBarrier();
+/*
 #ifdef USE_SenseBarrier
 #elif defined(USE_TreeBarrier)
 TreeBarrier_destroy();
 #elif defined(USE_StaticTreeBarrier)
 StaticTreeBarrier_destroy();
 #endif
+*/
 return 0;
 }
 

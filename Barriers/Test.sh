@@ -1,12 +1,9 @@
 #!/bin/bash
 
-for n in {20..200..20}
+for n in {2..8..1}
 	do 
 		echo $n
-		for r in {10..100..10}
-			do	
-				./stress_test.o -r $r -n $n >> SenseB.txt
-			done
+			./stress_test.o  -n $n -f $1>>StaticTreeBarrier_$1.txt
 	done
 
 

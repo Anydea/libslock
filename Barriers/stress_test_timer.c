@@ -23,9 +23,9 @@ int ROUND;
 int period;
 int total_cross=0;
 
-#define USE_SenseBarrier
+//#define USE_SenseBarrier
 
-//#define USE_TreeBarrier
+#define USE_TreeBarrier
 
 
 //#define USE_StaticTreeBarrier
@@ -105,14 +105,7 @@ while(!stop){
 		//gettimeofday(&(my_data->start[round]), NULL);
         	//printf("start %ld\n",(my_data->start[round]).tv_usec);
 	
-		#ifdef USE_SenseBarrier
-		barrier_cross(my_data->barrier,my_data);
-        	#elif defined(USE_TreeBarrier)
-		TreeBarrier_cross(my_data->barrier,my_data);
-		#elif defined(USE_StaticTreeBarrier)
-		StaticTreeBarrier_cross(my_data->barrier,my_data);
-		#endif
-		
+		CrossBarrier(my_data);
 		my_data->num_cross++;
 		//gettimeofday(&(my_data->end[round]), NULL);
 		//printf("end %ld\n",(my_data->end[round]).tv_usec);
@@ -150,7 +143,7 @@ num_thread 	= 	10;
 ROUND		=	10;
 radix		=	10;
 period		=	1;
-while((ch = getopt(argc,argv,"n:r::f::ht::"))!=-1){
+while((ch = getopt(argc,argv,"n:r:f:ht:"))!=-1){
 	switch(ch){
 		case 'n': 
 			num_thread = atoi(optarg);
@@ -208,25 +201,16 @@ barrier_init_def(&barrier_def,num_thread);
 
 
 //global test barrier
+
+BARRIER_t barrier;
+InitBarrier(&barrier);
 #ifdef USE_SenseBarrier
-
 char bname[] = "SenseBarrier";
-barrier_t barrier;
-barrier_init(&barrier);
 #elif defined(USE_TreeBarrier)
-
 char bname[] = "TreeBarrier";
-//radix = (int)(sqrt_my((int)num_thread))+1;
-num_backup = num_thread;
-TreeBarrier_t barrier;
-TreeBarrier_init(&barrier);
 #elif defined(USE_StaticTreeBarrier)
 char bname[] = "StaticTreeBarrier";
-//radix = (int)(2*sqrt_my((int)num_thread));
-StaticTreeBarrier_t barrier;
-StaticTreeBarrier_init(&barrier);
 #endif
-
 //initialize the data which will be passed to the threads
     if ((data = (thread_data_t *)malloc(num_thread * sizeof(thread_data_t))) == NULL) {
         perror("malloc");
@@ -287,12 +271,8 @@ for ( i = 0; i < num_thread; i++) {
 printf("%f\n",(float)total_cross/period); 
 free(threads);
 free(data);
-#ifdef USE_SenseBarrier
-#elif defined(USE_TreeBarrier)
-TreeBarrier_destroy();
-#elif defined(USE_StaticTreeBarrier)
-StaticTreeBarrier_destroy();
-#endif
+freeBarrier();
 return 0;
+
 }
 

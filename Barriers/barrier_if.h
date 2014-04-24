@@ -23,18 +23,15 @@ int sqrt_my(int num){
 }
 #endif
 
+
 int radix;
-
 #ifdef USE_SenseBarrier
-#include "SenseBarrier.h"
+	#include "SenseBarrier.h"
 #elif defined(USE_TreeBarrier)
-
-int num_backup;
-
-#include "TreeBarrier.h"
+	int num_backup;
+	#include "TreeBarrier.h"
 #elif defined(USE_StaticTreeBarrier)
-#include "StaticTreeBarrier.h"
-
+	#include "StaticTreeBarrier.h"
 #endif
 
 
@@ -47,15 +44,17 @@ typedef StaticTreeBarrier_t BARRIER_t;
 #endif
 
 
-static inline void InitBarrier(BARRIER_t barrier){
+static inline void InitBarrier(BARRIER_t* barrier){
 #ifdef USE_SenseBarrier
-    barrier_init(&barrier);
+	barrier_init(barrier);
 #elif defined(USE_TreeBarrier)
-    TreeBarrier_init(&barrier);
+	num_backup = num_thread;
+	TreeBarrier_init(barrier);
 #elif defined(USE_StaticTreeBarrier)
-     StaticTreeBarrier_init(&barrier);
+	StaticTreeBarrier_init(barrier);
 #endif
 }
+
 
 static inline void CrossBarrier(thread_data_t* my_data){
 #ifdef USE_SenseBarrier
@@ -67,12 +66,13 @@ static inline void CrossBarrier(thread_data_t* my_data){
 #endif
 }
 
+
 static inline void freeBarrier(){
-    #ifdef USE_SenseBarrier
-    #elif defined(USE_TreeBarrier)
-        TreeBarrier_destroy();
-    #elif defined(USE_StaticTreeBarrier)
-        StaticTreeBarrier_destroy();
-    #endif
+#ifdef USE_SenseBarrier
+#elif defined(USE_TreeBarrier)
+	TreeBarrier_destroy();
+#elif defined(USE_StaticTreeBarrier)
+	StaticTreeBarrier_destroy();
+#endif
 }
 
