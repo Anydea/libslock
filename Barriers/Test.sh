@@ -1,9 +1,61 @@
 #!/bin/bash
+rm Result.txt
 
-for n in {2..8..1}
+sample=$(seq $2 $3 $4)
+
+make Sense
+echo SenseBarrier>>Result.txt
+for n in $sample
 	do 
-		echo $n
-			./stress_test.o  -n $n -f $1>>StaticTreeBarrier_$1.txt
+		echo $n 
+			./Sense  -n $n>>Result.txt
 	done
+
+make MSense
+echo SenseBarrier with less cores>>Result.txt
+for n in $sample
+	do 
+		echo $n 
+			./MSense  -n $n>>Result.txt
+	done
+
+make Tree
+echo TreeBarrier>>Result.txt
+for n in $sample
+	do 
+		echo $n 
+			./Tree  -n $n -f $1>>Result.txt
+	done
+
+make MTree
+echo TreeBarrier with less cores>>Result.txt
+for n in $sample
+	do 
+		echo $n 
+			./MTree  -n $n -f $1>>Result.txt
+	done
+
+
+make Static
+echo StaticTreeBarrier>>Result.txt
+for n in $sample
+	do 
+		echo $n 
+			./Static  -n $n -f $1>>Result.txt
+	done
+
+make MStatic 
+echo StaticTreeBarrier>>Result.txt
+for n in $sample
+	do 
+		echo $n 
+			./MStatic -n $n -f $1>>Result.txt
+	done
+
+make clean
+
+
+
+
 
 
