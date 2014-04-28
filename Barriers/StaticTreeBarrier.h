@@ -124,7 +124,7 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	nodes = 0;
 	barrier->depth = 0;
 	int n = num_thread;
-	while(n>1){
+	while(n>=1){
 		barrier->depth++;
 		n = n/radix;
 	}
@@ -159,6 +159,5 @@ void StaticTreeBarrier_destroy(){
 		free(Node_list[i]);
 	}
 	free(Node_list);
-	//printf("Freed\n");
 }
 #endif

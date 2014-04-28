@@ -102,17 +102,13 @@ int ch;
 opterr = 0;
 
 //default setting
-num_thread 	= 	10;
-ROUND		=	10;
-radix		=	10;
+num_thread 	= 	6;
+radix		=	4;;
 period		=	1;
-while((ch = getopt(argc,argv,"n:r:f:ht:"))!=-1){
+while((ch = getopt(argc,argv,"n:f:ht:"))!=-1){
 	switch(ch){
 		case 'n': 
 			num_thread = atoi(optarg);
-			break;
-		case 'r':
-			ROUND = atoi(optarg);
 			break;
 		case 'f':
 			radix = atoi(optarg);
@@ -121,10 +117,10 @@ while((ch = getopt(argc,argv,"n:r:f:ht:"))!=-1){
 			period = atoi(optarg);
 			break;
 		case 'h' :
-			printf("-n NUM_THREAD\n-r NUM_ROUND\n-f Tree Radix\n");
+			printf("-n NUM_THREAD\n-t Test_time(s)\n-f Tree Radix\n");
 			return -1;
 		default  :
-			printf("-n NUM_THREAD\n-r NUM_ROUND\n-f Tree Radix\n");
+			printf("-n NUM_THREAD\n-t Test_time(s)\n-f Tree Radix\n");
 			return -1;
 	}
 }
@@ -133,15 +129,15 @@ while((ch = getopt(argc,argv,"n:r:f:ht:"))!=-1){
 #ifdef USE_SenseBarrier
 //printf("SenseBarrier\n");
 //printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\n",num_thread,ROUND);
-printf("%d %d ",num_thread,ROUND);
+printf("%d %d ",num_thread,period);
 #elif defined(USE_TreeBarrier)
 //printf("TreeBarrier\n");
 //printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\nTree Radix: %d\n",num_thread,ROUND,radix);
-printf("%d %d %d ",num_thread,ROUND,radix);
+printf("%d %d %d ",num_thread,period,radix);
 #elif defined(USE_StaticTreeBarrier)
 //printf("StaticTreeBarrier\n");
 //printf("Setting:\nNUM_THREAD: %d\nNUM_ROUND: %d\nTree Radix: %d\n",num_thread,ROUND,radix);
-printf("%d %d %d ",num_thread,ROUND,radix);
+printf("%d %d %d ",num_thread,period,radix);
 #endif
 
 struct timeval start[num_thread][ROUND], end[num_thread][ROUND];
@@ -262,7 +258,6 @@ while(!stop){
 	
 		//gettimeofday(&(my_data->start[round]), NULL);
         	//printf("start %ld\n",(my_data->start[round]).tv_usec);
-	
 		CrossBarrier(my_data);
 		my_data->num_cross++;
 		//gettimeofday(&(my_data->end[round]), NULL);
