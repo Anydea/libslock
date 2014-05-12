@@ -169,7 +169,7 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 		}
 
 	}
-	printf("Depth: %d\n", barrier->depth);
+	//printf("Depth: %d\n", barrier->depth);
 	barrier->radix = radix;
 	//barrier->root = NULL;
 	//node_init(barrier->root);
