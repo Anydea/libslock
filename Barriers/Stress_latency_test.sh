@@ -53,8 +53,7 @@ for n in $sample
 	done
 
 gunplot latencyplot
-rm LSense LMSense LTree LMTree LStatic LMStatic
-
+make clean
 
 
 

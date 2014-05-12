@@ -37,4 +37,4 @@ LStatic : stress_latency.c StaticTreeBarrier.h
 
 .PHONY :
 clean : 
-	rm MSense Sense MTree Tree MStatic Static LMSense LSense LMTree LTree LMStatic LStatic
+	rm MSense Sense MTree Tree MStatic Static
