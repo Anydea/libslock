@@ -1,6 +1,6 @@
 #!/bin/bash
 rm Result.txt
-
+rm *.dat
 sample=$(seq $2 $3 $4)
 
 make Sense
@@ -54,7 +54,7 @@ for n in $sample
 
 make clean
 
-
+gnuplot stressplot
 
 
 
