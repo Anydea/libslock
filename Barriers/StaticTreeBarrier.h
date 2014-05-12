@@ -3,7 +3,7 @@
 
 
 #include "atomic_ops.h"
-
+#include <math.h>
 
 
 typedef enum bool{
@@ -130,7 +130,7 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	}
 	int total =0;
 	for(n=0;n<=barrier->depth;n++){
-		total=total+radix^n;
+		total=total+pow(radix,n);
 	}
 	if(total<num_thread){
 		barrier->depth++;
