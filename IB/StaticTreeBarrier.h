@@ -71,7 +71,7 @@ void node_update(Node_t * node){
 void node_cross(Node_t* node, thread_data_t* tdata){
 	tdata->threadSense = !global_sense;
 	bool_t mySense = tdata->threadSense;
-	//printf("I'm  %d , having %d child(dren)\n",tdata->thread_id,node->children);
+	printf("I'm  %d , having %d child(dren)\n",tdata->thread_id,node->children);
 	while(node->ChildCount >0 && !stop){
 	/*	if(tdata->thread_id == 1){		
 		printf("I'm waiting %d\n",tdata->thread_id);
@@ -128,7 +128,11 @@ void build(Node_t* parent){
 	
 	while(nodes<num_thread){
 		
+<<<<<<< HEAD
 		int i;//max_nodes=0;
+=======
+		int i,//max_nodes=0;
+>>>>>>> abf17aa0714e4251ae5f61aa958fc7c6c55fd301
 	/*	for(i=0;i<=deep;i++){
 			max_nodes=max_nodes+pow(radix,i);
 		}
@@ -165,7 +169,7 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	if(total<num_thread){
 		barrier->depth++;
 	}
-	//printf("Depth: %d\n", barrier->depth);
+	printf("Depth: %d\n", barrier->depth);
 	barrier->radix = radix;
 	//barrier->root = NULL;
 	//node_init(barrier->root);

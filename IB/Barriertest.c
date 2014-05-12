@@ -9,7 +9,7 @@
 #include <math.h>
 
 
-int num_thread = 14;
+int num_thread = 5;
 int ROUND = 1;
 int stop =0;
 #define _Barrier_TEST_
@@ -94,7 +94,7 @@ TreeBarrier_t barrier;
 TreeBarrier_init(&barrier);
 #elif defined(USE_StaticTreeBarrier)
 printf("StaticTreeBarrier\n");
-radix = 2;
+radix = 3;
 //radix = (int)(2*sqrt_my((int)num_thread));
 StaticTreeBarrier_t barrier;
 StaticTreeBarrier_init(&barrier);
