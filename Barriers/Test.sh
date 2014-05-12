@@ -8,7 +8,7 @@ make Sense
 for n in $sample
 	do 
 		echo $n 
-			./Sense  -n $n>SeB.dat
+			./Sense  -n $n>>SeB.dat
 	done
 
 make MSense
