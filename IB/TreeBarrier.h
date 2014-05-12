@@ -19,8 +19,10 @@ typedef struct Node{
 }Node_t;
 
 Node_t ** Leaf_list;
+//Node_t ** Inner_list;
 //int * shared_counter;
 int leaves = 0;
+int total_inner = 0;	
 
 
 typedef struct TreeBarrier{
@@ -116,6 +118,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 
 
 void build(Node_t* parent, int depth){
+	//int queue = 1;
 	int *remaining;
 	remaining = &num_backup;
 	if(depth == 0){
@@ -129,6 +132,7 @@ void build(Node_t* parent, int depth){
 			(*remaining) =0;
 		}
 	}else{
+
 		int i;
 		for(i = 0; i< radix &&(*remaining)>0; i++){
 			//printf("remaining nodes %d  %d\n",*remaining,num_backup);
@@ -138,6 +142,17 @@ void build(Node_t* parent, int depth){
 			build(child,depth-1);
 			node_update(parent,0,remaining);
 		}
+/*
+
+		while(depth){
+			int i;
+			for(i=0;i<radix;i++){
+				Node_t * child = (Node_t *)malloc(sizeof(Node_t));
+				node_init(child);
+				node_parent(child,parent);
+				Inner_list[queue++] = child; 
+
+		} */
 	}
 }
 
@@ -145,23 +160,27 @@ void build(Node_t* parent, int depth){
 void TreeBarrier_init(TreeBarrier_t* barrier){
 	//printf("TreeBarrier Init.\n");
 	Leaf_list = (Node_t **)malloc((num_thread+radix-1)/radix*sizeof(Node_t));
-		
 	barrier->depth = 0;
-	int n = num_thread;
-	n = n+radix-1;
-	while(n>1){
-		barrier->depth++;
-		n = n/radix;
-	}
-	if(radix^(barrier->depth)<num_thread){
+	int leaf_nodes = (num_thread+radix-1)/radix;
+	//int n = leaf_nodes+radix-1;
+	while(leaf_nodes>1){
+		total_inner += leaf_nodes;
+		leaf_nodes = (leaf_nodes+radix-1)/radix;
 		barrier->depth++;
 	}
+	//Inner_list = (Node_t **)malloc((++total_inner)*sizeof(Node_t));
+	//if(radix^(barrier->depth)<num_thread){
+	//	barrier->depth++;
+	//}
+
 	//printf("Depth: %d\n", barrier->depth);
 	//shared_counter = (int*)malloc(depth*sizeof(int));
 	barrier->radix = radix;
 	//barrier->leaves_num = leaves;
 	//barrier->Leaf_list = Leaf_list;
 	barrier->root = (Node_t *)malloc(sizeof(Node_t));
+	//total_inner++;
+	//Inner_list[0]=barrier->root;
 	node_init(barrier->root);
 	build(barrier->root,barrier->depth-1);
 }
