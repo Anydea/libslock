@@ -54,7 +54,7 @@ for n in $sample
 
 make clean
 
-gnuplot stressplot
+#gnuplot stressplot
 
 
 
