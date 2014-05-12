@@ -121,9 +121,9 @@ void build(Node_t* parent){
 		node_update(branch);
 	*/	
 
-	Node_t * peak = Node_list[nodes++];//(Node_t *)malloc(sizeof(Node_t));
+	Node_t * peak = (Node_t *)malloc(sizeof(Node_t));
 	node_init(peak,parent,0);
-	//Node_list[nodes++] = peak;
+	Node_list[nodes++] = peak;
 	//deep++;
 	
 	while(nodes<num_thread){
@@ -134,9 +134,9 @@ void build(Node_t* parent){
 		}
 	*/	if(Node_list[queue]->ChildCount==0){
 			for(i=0;i<radix && nodes<num_thread; i++){
-				Node_t * branch =Node_list[nodes++];// (Node_t *)malloc(sizeof(Node_t));
+				Node_t * branch =(Node_t *)malloc(sizeof(Node_t));
 				node_init(branch,Node_list[queue],0);
-				//Node_list[nodes++] = branch;
+				Node_list[nodes++] = branch;
 				Node_list[queue]->children++;
 			}
 			node_update(Node_list[queue]);
