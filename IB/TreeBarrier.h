@@ -85,6 +85,7 @@ void node_update(Node_t *node, int is_leaf, int* remain){
 void node_cross(Node_t * node, thread_data_t* tdata){
 	tdata->threadSense = !node->sense;
 	bool_t mysense = tdata->threadSense;
+	printf("I'm  %d , having %d child(dren)\n",tdata->thread_id,node->children);
 	int temp,position;
 	while(!stop){
 		temp = node->count;
