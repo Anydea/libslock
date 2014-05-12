@@ -153,7 +153,7 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	Node_list = (Node_t **)malloc(num_thread*sizeof(Node_t));
 	nodes = 0;
 	barrier->depth = 0;
-	//int n = num_thread;
+	int n;
 	while(1){
 	//	barrier->depth++;
 	//	n = n/radix;
