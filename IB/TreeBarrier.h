@@ -182,7 +182,7 @@ void TreeBarrier_init(TreeBarrier_t* barrier){
 	//total_inner++;
 	//Inner_list[0]=barrier->root;
 	node_init(barrier->root);
-	build(barrier->root,barrier->depth-1);
+	build(barrier->root,barrier->depth);
 }
 
 
