@@ -134,9 +134,9 @@ void build(Node_t* parent){
 		}
 	*/	if(Node_list[queue]->ChildCount==0){
 			for(i=0;i<radix && nodes<num_thread; i++){
-				Node_t * branch = (Node_t *)malloc(sizeof(Node_t));
+				Node_t * branch =Node_list[nodes++];// (Node_t *)malloc(sizeof(Node_t));
 				node_init(branch,Node_list[queue],0);
-				Node_list[nodes++] = branch;
+				//Node_list[nodes++] = branch;
 				Node_list[queue]->children++;
 			}
 			node_update(Node_list[queue]);
@@ -153,17 +153,21 @@ void StaticTreeBarrier_init(StaticTreeBarrier_t * barrier){
 	Node_list = (Node_t **)malloc(num_thread*sizeof(Node_t));
 	nodes = 0;
 	barrier->depth = 0;
-	int n = num_thread;
-	while(n>=1){
-		barrier->depth++;
-		n = n/radix;
-	}
-	int total =0;
-	for(n=0;n<=barrier->depth;n++){
-		total=total+pow(radix,n);
-	}
-	if(total<num_thread){
-		barrier->depth++;
+	//int n = num_thread;
+	while(1){
+	//	barrier->depth++;
+	//	n = n/radix;
+	
+		int total =0;
+		for(n=0;n<=barrier->depth;n++){
+			total=total+pow(radix,n);
+		}
+		if(total<num_thread){
+			barrier->depth++;
+		}else{
+			break;
+		}
+
 	}
 	printf("Depth: %d\n", barrier->depth);
 	barrier->radix = radix;

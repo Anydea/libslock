@@ -11,10 +11,10 @@ Tree  : stress_test_timer.c TreeBarrier.h
 	gcc -pthread -o Tree stress_test_timer.c -DUSE_TreeBarrier
 
 MStatic : stress_test_timer.c StaticTreeBarrier.h
-	gcc -pthread -o MStatic stress_test_timer.c -DUSE_StaticTreeBarrier -DMORE_THREADS
+	gcc -pthread -o MStatic stress_test_timer.c -DUSE_StaticTreeBarrier -DMORE_THREADS -lm
 
 Static : stress_test_timer.c StaticTreeBarrier.h
-	gcc -pthread -o Static stress_test_timer.c -DUSE_StaticTreeBarrier
+	gcc -pthread -o Static stress_test_timer.c -DUSE_StaticTreeBarrier -lm
 
 LMSense : stress_latency.c SenseBarrier.h
 	gcc -pthread -o MSense stress_latency.c -DUSE_SenseBarrier -DMORE_THREADS
@@ -29,10 +29,10 @@ LTree  : stress_latency.c TreeBarrier.h
 	gcc -pthread -o Tree stress_latency.c -DUSE_TreeBarrier
 
 LMStatic : stress_latency.c StaticTreeBarrier.h
-	gcc -pthread -o MStatic stress_latency.c -DUSE_StaticTreeBarrier -DMORE_THREADS
+	gcc -pthread -o MStatic stress_latency.c -DUSE_StaticTreeBarrier -DMORE_THREADS -lm
 
 LStatic : stress_latency.c StaticTreeBarrier.h
-	gcc -pthread -o Static stress_latency.c -DUSE_StaticTreeBarrier
+	gcc -pthread -o Static stress_latency.c -DUSE_StaticTreeBarrier -lm
 
 
 .PHONY :
