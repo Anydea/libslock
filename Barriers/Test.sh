@@ -45,7 +45,7 @@ for n in $sample
 	done
 
 make MStatic 
-echo StaticTreeBarrier>>Result.txt
+echo StaticTreeBarrier with less cores>>Result.txt
 for n in $sample
 	do 
 		echo $n 
