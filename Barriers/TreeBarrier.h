@@ -3,7 +3,7 @@
 #define _TreeBarrier_h_
 
 #include "atomic_ops.h"
-
+#include <math.h>
 
 
 typedef enum bool{
@@ -153,7 +153,7 @@ void TreeBarrier_init(TreeBarrier_t* barrier){
 		barrier->depth++;
 		n = n/radix;
 	}
-	if(radix^(barrier->depth)<num_thread){
+	if(pow(radix,(barrier->depth))<num_thread){
 		barrier->depth++;
 	}
 	//printf("Depth: %d\n", barrier->depth);

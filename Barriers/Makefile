@@ -5,34 +5,34 @@ Sense :  stress_test_timer.c SenseBarrier.h
 	gcc -pthread -o Sense stress_test_timer.c -DUSE_SenseBarrier 
 
 MTree : stress_test_timer.c TreeBarrier.h
-	gcc -pthread -o MTree stress_test_timer.c -DUSE_TreeBarrier -DMORE_THREADS
+	gcc -pthread -o MTree stress_test_timer.c -DUSE_TreeBarrier -DMORE_THREADS -lm
 
 Tree  : stress_test_timer.c TreeBarrier.h
-	gcc -pthread -o Tree stress_test_timer.c -DUSE_TreeBarrier
+	gcc -pthread -o Tree stress_test_timer.c -DUSE_TreeBarrier -lm
 
 MStatic : stress_test_timer.c StaticTreeBarrier.h
-	gcc -pthread -o MStatic stress_test_timer.c -DUSE_StaticTreeBarrier -DMORE_THREADS
+	gcc -pthread -o MStatic stress_test_timer.c -DUSE_StaticTreeBarrier -DMORE_THREADS -lm
 
 Static : stress_test_timer.c StaticTreeBarrier.h
-	gcc -pthread -o Static stress_test_timer.c -DUSE_StaticTreeBarrier
+	gcc -pthread -o Static stress_test_timer.c -DUSE_StaticTreeBarrier -lm
 
 LMSense : stress_latency.c SenseBarrier.h
-	gcc -pthread -o MSense stress_latency.c -DUSE_SenseBarrier -DMORE_THREADS
+	gcc -pthread -o MSense stress_latency.c -DUSE_SenseBarrier -DMORE_THREADS 
 
 LSense :  stress_latency.c SenseBarrier.h
 	gcc -pthread -o Sense stress_latency.c -DUSE_SenseBarrier 
 
 LMTree : stress_latency.c TreeBarrier.h
-	gcc -pthread -o MTree stress_latency.c -DUSE_TreeBarrier -DMORE_THREADS
+	gcc -pthread -o MTree stress_latency.c -DUSE_TreeBarrier -DMORE_THREADS -lm
 
 LTree  : stress_latency.c TreeBarrier.h
-	gcc -pthread -o Tree stress_latency.c -DUSE_TreeBarrier
+	gcc -pthread -o Tree stress_latency.c -DUSE_TreeBarrier -lm
 
 LMStatic : stress_latency.c StaticTreeBarrier.h
-	gcc -pthread -o MStatic stress_latency.c -DUSE_StaticTreeBarrier -DMORE_THREADS
+	gcc -pthread -o MStatic stress_latency.c -DUSE_StaticTreeBarrier -DMORE_THREADS -lm
 
 LStatic : stress_latency.c StaticTreeBarrier.h
-	gcc -pthread -o Static stress_latency.c -DUSE_StaticTreeBarrier
+	gcc -pthread -o Static stress_latency.c -DUSE_StaticTreeBarrier -lm
 
 
 .PHONY :
