@@ -121,9 +121,9 @@ void build(Node_t* parent){
 		node_update(branch);
 	*/	
 
-	Node_t * peak = (Node_t *)malloc(sizeof(Node_t));
+	Node_t * peak = Node_list[nodes++];//(Node_t *)malloc(sizeof(Node_t));
 	node_init(peak,parent,0);
-	Node_list[nodes++] = peak;
+	//Node_list[nodes++] = peak;
 	//deep++;
 	
 	while(nodes<num_thread){
