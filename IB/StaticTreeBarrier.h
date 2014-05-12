@@ -128,11 +128,7 @@ void build(Node_t* parent){
 	
 	while(nodes<num_thread){
 		
-<<<<<<< HEAD
 		int i;//max_nodes=0;
-=======
-		int i,//max_nodes=0;
->>>>>>> abf17aa0714e4251ae5f61aa958fc7c6c55fd301
 	/*	for(i=0;i<=deep;i++){
 			max_nodes=max_nodes+pow(radix,i);
 		}
