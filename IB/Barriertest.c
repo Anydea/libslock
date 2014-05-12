@@ -11,7 +11,7 @@
 
 int num_thread = 14;
 int ROUND = 1;
-
+int stop =0;
 #define _Barrier_TEST_
 
 //#define USE_SenseBarrier
