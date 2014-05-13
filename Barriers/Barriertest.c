@@ -11,14 +11,14 @@
 
 int num_thread = 14;
 int ROUND = 1;
-
+int stop = 0;
 #define _Barrier_TEST_
 
 //#define USE_SenseBarrier
 
-//#define USE_TreeBarrier
+#define USE_TreeBarrier
 
-#define USE_StaticTreeBarrier
+//#define USE_StaticTreeBarrier
 
 #include "barrier_if.h"
 
