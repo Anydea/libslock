@@ -3,7 +3,7 @@
 #define _TreeBarrier_h_
 
 #include "atomic_ops.h"
-
+#include <sched.h>
 
 
 typedef enum bool{
@@ -109,7 +109,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 	}else{
 		while(node->sense != mysense && !stop) {
 			#ifdef MORE_THREADS
-				pthread_yield();
+				sched_yield();
 			#endif
 		}
 	}
