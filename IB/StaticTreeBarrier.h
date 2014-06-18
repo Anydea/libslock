@@ -80,6 +80,7 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 	node->ChildCount = node->children;
 	if(node->parent != NULL){
 		int temp;
+/*
 		while(!stop){
 			temp=node->parent->ChildCount;
 			if(temp == CAS_U64(&node->parent->ChildCount,temp,temp-1)){
@@ -89,6 +90,8 @@ void node_cross(Node_t* node, thread_data_t* tdata){
 				continue;
 			}
 		}
+*/
+		temp = FAD_U64(&(node->parent->ChildCount));
 		while(global_sense != mySense && !stop){
 			#ifdef MORE_THREADS
 				pthread_yield();

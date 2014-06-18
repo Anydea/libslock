@@ -53,6 +53,7 @@ void barrier_cross(barrier_t *b,thread_data_t* tdata){
 	//printf("Crossing Start\n");
 	tdata->threadSense = !b->sense;
 	int temp,position;
+/*
 	while(!stop){
 		temp = b->count;
 		if(temp == CAS_U64(&(b->count),temp,temp-1)){
@@ -64,6 +65,8 @@ void barrier_cross(barrier_t *b,thread_data_t* tdata){
 		}
 	
 	} 
+*/	
+	position = FAD_U64(&(b->count));
 	if(position == 1){
 		b->count = num_thread;
 		b->sense = tdata->threadSense;

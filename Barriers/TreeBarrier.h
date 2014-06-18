@@ -84,6 +84,7 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 	tdata->threadSense = !node->sense;
 	bool_t mysense = tdata->threadSense;
 	int temp,position;
+/*
 	while(!stop){
 		temp = node->count;
 		//printf("temp: %d\n",temp);
@@ -95,7 +96,10 @@ void node_cross(Node_t * node, thread_data_t* tdata){
 			continue;
 		}
 	}
+*/       
+	position = FAD_U64(&(node->count));
 	//printf("Id: %d  position: %d .\n",tdata->thread_id, position);
+
 	if(position == 1){
 		if(node->parent != NULL){
 			//printf("I'm not parent\n");
